@@ -8108,6 +8108,8 @@ static int find_energy_efficient_cpu(struct sched_domain *sd,
 	int next_cpu = -1, backup_cpu = -1;
 	int boosted = (schedtune_task_boost(p) > 0);
 	bool sync_boost = false;
+	int prefer_idle = sched_feat(EAS_PREFER_IDLE) ?
+				(schedtune_prefer_idle(p) > 0) : 0;
 
 	fbt_env.fastpath = 0;
 	fbt_env.need_idle = 0;
@@ -8133,7 +8135,7 @@ static int find_energy_efficient_cpu(struct sched_domain *sd,
 	}
 
 	if (use_sync_boost)
-		sync_boost = sync && cpu >= cpu_rq(cpu)->rd->mid_cap_orig_cpu;
+		sync_boost = sync && prefer_idle && cpu >= cpu_rq(cpu)->rd->mid_cap_orig_cpu;
 
 	/* prepopulate energy diff environment */
 	eenv = get_eenv(p, prev_cpu);
@@ -8173,16 +8175,6 @@ static int find_energy_efficient_cpu(struct sched_domain *sd,
 				break;
 		}
 	} else {
-		int prefer_idle;
-
-		/*
-		 * give compiler a hint that if sched_features
-		 * cannot be changed, it is safe to optimise out
-		 * all if(prefer_idle) blocks.
-		 */
-		prefer_idle = sched_feat(EAS_PREFER_IDLE) ?
-				(schedtune_prefer_idle(p) > 0) : 0;
-
 		eenv->max_cpu_count = EAS_CPU_BKP + 1;
 
 		fbt_env.rtg_target = rtg_target;
