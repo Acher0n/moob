@@ -6801,7 +6801,7 @@ boosted_cpu_util(int cpu, struct sched_walt_cpu_load *walt_load)
 
 	trace_sched_boost_cpu(cpu, util, margin);
 
-	return util + margin;
+	return util;
 }
 
 static inline unsigned long
@@ -6812,7 +6812,7 @@ boosted_task_util(struct task_struct *task)
 
 	trace_sched_boost_task(task, util, margin);
 
-	return util + margin;
+	return util;
 }
 
 static unsigned long cpu_util_without(int cpu, struct task_struct *p);
