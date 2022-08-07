@@ -26,6 +26,7 @@
  */
 
 #include "wlan_hdd_main.h"
+#include <linux/pm_qos.h>
 
 #ifdef WLAN_FEATURE_PACKET_FILTERING
 
@@ -33,7 +34,12 @@
 
 #define HDD_WAKELOCK_TIMEOUT_CONNECT 1000
 #define HDD_WAKELOCK_TIMEOUT_RESUME 1000
+
+#ifdef CLD_PM_QOS
 #define DISABLE_KRAIT_IDLE_PS_VAL      1
+#else
+#define DISABLE_KRAIT_IDLE_PS_VAL      PM_QOS_DEFAULT_VALUE
+#endif
 
 /*
  * HDD_WAKELOCK_CONNECT_COMPLETE = CSR_JOIN_FAILURE_TIMEOUT_DEFAULT (3000) +
